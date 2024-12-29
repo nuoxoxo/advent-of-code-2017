@@ -5,7 +5,7 @@ while curr ** 2 < END:
     sq = curr ** 2
     curr += 2
     step += 1
-print('sq/neap1t',sq,'- step/',step)
+print('sq/nearest',sq,'- step/',step)
 dist = (sq - END) % (step * 2)
 p1 = step + abs((curr // 2) - dist)
 
