@@ -35,7 +35,7 @@ def dance(line,N,IT):
                 it = 0
                 found = True
                 print(pattern, 'seen/at',it,'IT/updated',IT)
-                SEEN = {}
+                #SEEN = {}
                 continue
             SEEN[pattern] = it#.add(pattern)
         print(it,''.join(dancers))
