@@ -1,25 +1,28 @@
-#comp	:=	c++ -std=c++11 -Wall -Werror -Wextra
-comp	:=	c++ -std=c++17
-name	:=	out
+pre :=	8
+pre :=	9
+pre :=	17
 rmv	:=	rm -f
-
-src	:=	aoc1701.cc
+src	:=  $(if $(shell [ $(pre) -gt 9 ] && echo 1),$(pre).cc,0$(pre).cc)
+name	:=	out
+comp	:=	c++ -std=c++2a
 
 all	:	$(name)
+
 $(name)	:	$(src)
 		@ $(comp) $^ -o $@
-		@ echo "data" && echo "" 
-		@ ./$(name) < _inputs_/1701.0
-		@ echo "" && echo "test" && echo ""
-		@ ./$(name) < _inputs_/1701.1
+		@ ./$(name) #< $(pre).0
+
+test	:	$(name)
+		@ ./$(name) #< $(pre).0
+		@ echo "\n------\ntest\n------\n"
+		@ ./$(name) #< $(pre).1
 		@ make f
 
 clean	:
 		@ $(rmv) $(name)
-
 fclean	:	clean
 		@ $(rmv) out *.out
-
+t		: test
 f	:	fclean
 re	:	f all
-.PHONY	:	fclean clean all re f
+.PHONY	:	fclean clean f all re
