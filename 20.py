@@ -1,16 +1,16 @@
-import re
+import re, collections
 lines = open(0).read().splitlines()
 P = [list(map(int,re.findall(r'-?\d+',_))) for _ in lines]
-pcl,PCL = [],[]
+np = len(P)
+pcl,pclp2 = [],[]
 for line in P:
     p,v,a = line[:3],line[3:6],line[6:]
     #if sum([_ == 0 for _ in a]) == 2: print(i,'/',p,v,a)
     pcl.append([p,v,a])
-    PCL.append([p[:],v[:],a[:]])
-import collections
+    pclp2.append([p[:],v[:],a[:]])
+
 D = collections.defaultdict(int)
 it = 0
-
 while 42:
     close = 10**20
     which = None
@@ -27,14 +27,14 @@ while 42:
     if it % 200 == 0: print(f'p1 - i/{it}\tp({which}) has d({close})')
     D[which] += 1
     if D[which] > 2**10:
+        print('p1/ends\n')
         break
     it += 1
-print('p1/ends\n')
+
 p1 = max(D,key=D.get)
 
 D.clear()
 gone = set()
-np = len(lines)
 it = 0
 while 42:
     coors = collections.defaultdict(list)
@@ -44,8 +44,9 @@ while 42:
     D[diff] += 1
     if D[diff] > 2**10:
         p2 = diff
+        print('p2/ends\n')
         break
-    for i, pc in enumerate(PCL):
+    for i, pc in enumerate(pclp2):
         if i in gone:
             continue
         p,v,a = pc
@@ -53,11 +54,11 @@ while 42:
         for j in range(3):
             v[j] += a[j]
             p[j] += v[j]
-        PCL[i] = [p,v,a]
+        pclp2[i] = [p,v,a]
     for _,l in coors.items():
         if len(l) > 1:
             for idx in l:
                 gone.add(idx)
     it += 1
-print('\npart 1:',p1)
+print('part 1:',p1)
 print('part 2:',p2)
