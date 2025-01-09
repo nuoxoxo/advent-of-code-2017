@@ -1,18 +1,18 @@
 import collections, re, networkx as nx
 
-TEST=1
+TEST=0#1
 lines = open(0).read().splitlines()
 D = collections.defaultdict(int)
 g = nx.DiGraph() # p2
 for line in lines:
-    words = re.findall(r'[a-z]+', line)
-    W = int(re.findall(r'\((\d+)\)', line)[0])
-    for w in words: D[w] += 1
+    names = re.findall(r'[a-z]+', line)
+    w = int(re.findall(r'\((\d+)\)', line)[0])
+    for name in names: D[name] += 1
     # p2
-    g.add_node(words[0], W=W)
+    g.add_node(names[0], w=w)
     if '->' in line:
-        for i in range(1, len(words)):
-            g.add_edge(words[0], words[i])
+        for i in range(1, len(names)):
+            g.add_edge(names[0], names[i])
 
 p1 = None
 for k,v in D.items():
@@ -21,7 +21,6 @@ for k,v in D.items():
         break
 
 p2 = None
-# info of the graph
 if TEST:
     for node in g:
         print('node/',node)
@@ -34,32 +33,35 @@ ID = dict(g.in_degree())
 OD = dict(g.out_degree())
 
 rev = list(nx.topological_sort(g))[::-1]
-trackingwei = {}
+SUMS = {}
 # traverse upwards in a reversed tree, one level at a time
 for node in rev:
     if TEST:
-        print('node -',node,g.nodes[node]['W'],'in/out',ID[node],OD[node])
-    curr = g.nodes[node]['W']
-    levelwei = collections.defaultdict(int)
+        print('node -',node,g.nodes[node]['w'],'in/out',ID[node],OD[node])
     children = g[node]
+    FREQ = collections.defaultdict(int)
     for child in children:
-        levelwei[trackingwei[child]] += 1
-    N = len(levelwei)
+        FREQ[SUMS[child]] += 1
+    N = len(FREQ)
     special = None
     assert N in range(3)
     if N == 2:
-        most_common = max(levelwei, key=levelwei.get)
-        less_common = min(levelwei, key=levelwei.get)
+        many = max(FREQ, key=FREQ.get)
+        only = min(FREQ, key=FREQ.get)
+    update = 0
     for child in children:
-        wc = trackingwei[child]
-        curr += wc
-        if N == 2 and wc != most_common:
+        update += SUMS[child]
+        accwei = SUMS[child]
+        if N == 2 and accwei != many:
             special = child
             break
     if special:
-        p2 = g.nodes[special]['W'] - abs(most_common - less_common)
+        correction = abs(many - only)
+        p2 = g.nodes[special]['w'] - correction
+        print(f'disc/ {list(FREQ.items())}')
+        print(f'found/ {special}\ncorrection/ {correction}')
         break
-    trackingwei[node] = curr
+    SUMS[node] = update + g.nodes[node]['w']
 
 print('part 1:', p1)
 print('part 2:', p2)
