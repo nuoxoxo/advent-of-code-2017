@@ -1,4 +1,4 @@
-pre :=	19#10#17#9#8
+pre :=	7#19#10#17#9#8
 rmv	:=	rm -f
 src	:=  $(if $(shell [ $(pre) -gt 9 ] && echo 1),$(pre).cc,0$(pre).cc)
 name	:=	out
@@ -11,7 +11,7 @@ $(name)	:	$(src)
 		@ ./$(name) < $(pre).0
 
 test	:	$(name)
-		@ ./$(name) < $(pre).0
+		@#@ ./$(name) < $(pre).0
 		@ echo "\n------\ntest\n------\n"
 		@ ./$(name) < $(pre).1
 		@ make f
