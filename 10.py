@@ -26,32 +26,30 @@ def go(n,line,RANGE):
     if test==1:
         nums = list(range(5))
         lens = getlens('3, 4, 1, 5')
-    skp = 0
-    cur = nums[0]
-    N = len(nums)
-    assert not any([_ > N for _ in lens])
+    skip = 0
+    curr = 0
+    assert not any([_ > RANGE for _ in lens])
     for _ in range(n):
         for ln in lens:
             indices,rev = [],[]
-            count = 0
-            while count < ln:
-                indices.append((cur + count) % N)
-                rev.append(nums[(cur+count)%N])
-                count += 1
+            for i in range(ln):
+                idx = (curr + i) % RANGE
+                indices.append(idx)
+                rev.append(nums[idx])
             rev = rev[::-1]
             """
-            print('cur/pos',cur,'/val',nums[cur],'\nskp/',skp)
+            print('curr/pos',curr,'/val',nums[curr],'\nskip/',skip)
             print('nums/',nums)
             print('idxs/',indices)
             print('rev/',rev)
             """
             for idx,i, in enumerate(indices):
                 nums[i] = rev[idx]
-            cur = (cur + ln + skp) % N
-            skp = (skp + 1) % N
+            curr = (curr + ln + skip) % RANGE
+            skip = (skip + 1) % RANGE
             """"
             print('inp/',ln, '\nnew/',nums)
-            print('cur/pos',cur,'/val',nums[cur],'\nskp/',skp)
+            print('curr/pos',curr,'/val',nums[curr],'\nskip/',skip)
             print()
             """
     return nums

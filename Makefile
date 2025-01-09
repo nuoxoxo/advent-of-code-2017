@@ -1,6 +1,7 @@
 pre :=	8
 pre :=	9
 pre :=	17
+pre :=	10
 rmv	:=	rm -f
 src	:=  $(if $(shell [ $(pre) -gt 9 ] && echo 1),$(pre).cc,0$(pre).cc)
 name	:=	out
@@ -10,7 +11,7 @@ all	:	$(name)
 
 $(name)	:	$(src)
 		@ $(comp) $^ -o $@
-		@ ./$(name) #< $(pre).0
+		@ ./$(name) < $(pre).0
 
 test	:	$(name)
 		@ ./$(name) #< $(pre).0
