@@ -1,4 +1,4 @@
-pre :=	22#7#19#10#17#9#8
+pre :=	24#22#7#19#10#17#9#8
 rmv	:=	rm -f
 src	:=  $(if $(shell [ $(pre) -gt 9 ] && echo 1),$(pre).cc,0$(pre).cc)
 name	:=	out
