@@ -1,92 +1,68 @@
 lines = open(0).read().splitlines()
 
-begin=[list(_) for _ in """.#.
+BEGIN=[list(_) for _ in """.#.
 ..#
 ###
 """.split()]
-for i,s in enumerate(begin):print('|',''.join(s),'\n'if i==len(begin)-1 else'')
 
-def go(T,s):
-    print('go/')
-    RULES = {}
-    for line in lines:
-        p,rule = line.split(' => ')
-        RULES[p] = rule
-        """
-        for f in f(p): print('  f/',f)
-        for r in r(p): print('  r/',r)
-        for fr in fr(p): print('  +/',fr)
-        """
-        for pattern in flip(p) + rot(p) + frot(p):
-            RULES[pattern] = rule
-    for k,v in RULES.items(): print(k,'=>',v)
+for i,s in enumerate(BEGIN):print('|',''.join(s),'\n'if i==len(BEGIN)-1 else'')
 
-    for i,_ in enumerate(s):print('|',''.join(_),'\n'if i==len(_)-1 else'')
-    mult = 1
+def go(state, checks, T):
     res = None
-    for _ in range(T):
-        N = len(s)
-        count = 0
-        if N % 2 == 0 and N != 2:
-            #print('here/2',N)
-            s = s[:N//2]
-            for i in range(len(s)):
-                s[i] = s[i][:N//2]
-            mult = (N//2) ** 2
-        elif N != 3:
-            print('here/3',N)
-            assert N % 3 == 0
-            s = s[:N//3]
-            for i in range(len(s)):
-                s[i] = s[i][:N//3]
-            #mult *= N//3
-            mult = (N//3) ** 2
-        N = len(s) # redo
-        for r in range(N):
-            for c in range(N):
-                if s[r][c] == '#':
-                    print('curr/u',count,mult)
-                    count += 1 * mult#(1 if not mult else mult)
-                    print('curr/d',count,mult)
-        res = count
-        for i,_ in enumerate(s):print('|',''.join(_))#,'\n'if i==len(_)-1 else'')
-        print('\ncount/',count)
-        k = '/'.join([''.join(_) for _ in s])
-        #print(k,k in RULES)
-        v = RULES[k]
-        tmp = []
-        for r in v.split('/'):
-            tmp.append(list(r))
-        s = [_[:] for _ in tmp]
-
-    print('res/',res)
+    for t in range(T):
+        if t in checks:
+            res = sum([line.count('#') for line in state])
+            yield res
+            print(f'res/{t} {res}')
+            if t == checks[-1]: print(); return
+        N = len(state)
+        if N % 2 != 0 and N % 3 != 0:
+            assert False
+        _next = []
+        sizeof = 2 if N % 2 == 0 else 3
+        for r in range(0, N, sizeof):
+            subs = ['' for _ in range(sizeof + 1)]
+            for c in range(0, N, sizeof):
+                i = tuple([''.join(state[r + i][c:c + sizeof]) for i in range(sizeof)])
+                o = RULES[i]
+                for i, line in enumerate(o):
+                    subs[i] += line
+            _next += subs
+        state = _next
 
 # flip/ U->D - L->R
 # rotate/ L-90,R-90 - further be same as flip
 # flip+rotate/ U->D->L|R.90 - L->R->L|R.90
 
-def flip(line):
-    res = []
-    g = line.split('/')
-    N = len(g)
-    LR = ''
-    for r in range(N):
-        t = list(g[r])
-        for c in range(N//2): t[c],t[N-c-1] = t[N-c-1],t[c]
-        LR += ''.join(t) + ('/' if r != N - 1 else '')
-    res.append(LR)
-    for r in range(N//2): g[r],g[N-r-1] = g[N-r-1],g[r]
-    res.append('/'.join(_ for _ in g))
-    return res
+def flip(G):
+    return [tuple(''.join(_[::-1]) for _ in G),
+            tuple(''.join(_) for _ in G[::-1])]
 
-def rot(line):
-    g = line.split('/')
-    return ['/'.join([''.join(_) for _ in list(zip(*g))][::-1]),\
-            '/'.join([''.join(_[::-1]) for _ in list(zip(*g))])]
+def rot(g):
+    return [tuple(''.join(_) for _ in zip(*g[::-1])),
+            tuple(''.join(_) for _ in zip(*g))[::-1],
+            tuple(''.join(_[::-1]) for _ in g[::-1])]
 
-def frot(line):
-    return [_ for flipped in flip(line) for _ in rot(flipped)]
+def frot(G):
+    r = [tuple(_) for _ in rot(G)]
+    fr = [tuple(_) for f in flip(G) for _ in rot(f)]
+    return r + fr
 
 if __name__ == '__main__':
-    #go( 2, [_[:] for _ in begin] )
-    go( 5, [_[:] for _ in begin] )
+
+    RULES = {}
+    for line in lines:
+        L,R = [_.split('/') for _ in line.split(' => ')]
+        RULES[tuple(L)] = tuple(R)
+        for f in flip(L): print('f/',f)
+        for r in rot(L): print('r/',r)
+        for fr in frot(L): print('+/',fr)
+        for pattern in flip(L) + rot(L) + frot(L):
+            RULES[tuple(pattern)] = tuple(R)
+    for k,v in RULES.items(): print(k,'=>',v,'/dict')
+    _, p1, p2 = go([_[:] for _ in BEGIN], [2,5,18], 18+1)
+
+    print('part 1:',p1)
+    print('part 2:',p2)
+    assert p1 == 167
+    assert p2 == 2425195
