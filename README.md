@@ -16,7 +16,7 @@ day   | keypoint
 ||
 19    | sim - straighforward bruteforce
 20    | sim - straighforward bruteforce
-21    | rotating/flipping a grid ends in 8 variations + straight sim 
+21    | flipping|spinning a grid ends in 8 variations + straight sim 
 22    | sim - define an offset size for DP
 24    | backtracking
 25    | oop
